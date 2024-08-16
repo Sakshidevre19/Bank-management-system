@@ -1,0 +1,95 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+class Transaction {
+public:
+    Transaction(std::string type, double amount) : type(type), amount(amount) {}
+    std::string getType() const { return type; }
+    double getAmount() const { return amount; }
+
+private:
+    std::string type;
+    double amount;
+};
+
+class Account {
+public:
+    Account(int number, double balance) : number(number), balance(balance) {}
+    int getNumber() const { return number; }
+    double getBalance() const { return balance; }
+    void deposit(double amount) {
+        balance += amount;
+        transactions.push_back(Transaction("Deposit", amount));
+    }
+    bool withdraw(double amount) {
+        if (balance >= amount) {
+            balance -= amount;
+            transactions.push_back(Transaction("Withdrawal", amount));
+            return true;
+        }
+        return false;
+    }
+    void printTransactions() const {
+        for (const auto& t : transactions) {
+            std::cout << t.getType() << ": " << t.getAmount() << std::endl;
+        }
+    }
+
+private:
+    int number;
+    double balance;
+    std::vector<Transaction> transactions;
+};
+
+class Customer {
+public:
+    Customer(std::string name, int id) : name(name), id(id) {}
+    std::string getName() const { return name; }
+    int getId() const { return id; }
+    void addAccount(Account account) { accounts.push_back(account); }
+    void printAccounts() const {
+        for (const auto& a : accounts) {
+            std::cout << "Account " << a.getNumber() << ": " << a.getBalance() << std::endl;
+        }
+    }
+
+private:
+    std::string name;
+    int id;
+    std::vector<Account> accounts;
+};
+
+class BankingServices {
+public:
+    void addCustomer(Customer customer) { customers.push_back(customer); }
+    Customer* findCustomer(int id) {
+        for (auto& c : customers) {
+            if (c.getId() == id) return &c;
+        }
+        return nullptr;
+    }
+
+private:
+    std::vector<Customer> customers;
+};
+
+int main() {
+    BankingServices bank;
+
+    Customer c1("Dhanvi", 1);
+    c1.addAccount(Account(101, 1000));
+    bank.addCustomer(c1);
+
+    Customer c2("Manya", 2);
+    c2.addAccount(Account(201, 500));
+    bank.addCustomer(c2);
+
+    Customer* customer = bank.findCustomer(1);
+    if (customer) {
+        std::cout << "Customer: " << customer->getName() << std::endl;
+        customer->printAccounts();
+    }
+
+    return 0;
+}
